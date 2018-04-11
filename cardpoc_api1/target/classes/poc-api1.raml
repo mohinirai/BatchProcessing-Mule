@@ -1,0 +1,98 @@
+#%RAML 1.0
+title: Card_POC_API1
+description: This is used to get the cards details list based on account nmber and credit card number.
+version: '0.1'
+mediaType: application/json
+protocols:
+  - HTTP
+baseUri: 'https://mocksvc.mulesoft.com/mocks/d6e8b137-5ec4-44da-bdcd-61f6d35aa569'
+types:
+  Card:
+    description: This is a new DataType
+    type: object
+    properties:
+      cardType:
+        required: true
+        example: Visa
+        description: Property description
+        type: string
+      cardExpiryDate:
+        required: true
+        example: '2018-04-02'
+        description: Property description
+        type: date-only
+      cardNumber:
+        required: true
+        pattern: '[1-9]{4}[- ]?[0-9]{4}[- ]?[0-9]{4}[- ]?[0-9]{4}'
+        example: 7894-8520-9630-0138
+        description: Property description
+        type: string
+      cardHolderName:
+        required: true
+        example: xyz
+        description: Property description
+        type: string
+/credit-card-accounts:
+  '/{accountNumber}':
+    get:
+      responses:
+        '200':
+          body:
+            application/json:
+              type: array
+              items:
+                required: false
+                type: Card
+        '400':
+          body:
+            application/json:
+              example: 'Error : Invalid Input. Please Try Again '
+              type: string
+        '404':
+          body:
+            application/json:
+              example: 'Error : Resource not found.Please Try Again'
+              type: string
+        '500':
+          body:
+            application/json:
+              example: 'Error : Service Unavailable. Please Try Again.'
+              type: string
+    uriParameters:
+      accountNumber:
+        minLength: 16
+        maxLength: 19
+        pattern: '[1-9]{4}[- ]?[0-9]{4}[- ]?[0-9]{4}[- ]?[0-9]{4}'
+        example: '1244546461311445'
+        description: Property description
+        type: string
+  /get-cards:
+    get:
+      responses:
+        '200':
+          body:
+            application/json:
+              type: Card
+        '400':
+          body:
+            application/json:
+              example: 'Error : Invalid Input. Please Try Again '
+              type: string
+        '404':
+          body:
+            application/json:
+              example: 'Error : Resource no found Please try again '
+              type: string
+        '500':
+          body:
+            application/json:
+              example: 'Error : Service Unavailable. Please Try Again  '
+              type: string
+      queryParameters:
+        creditCardNumber:
+          minLength: 16
+          maxLength: 19
+          pattern: '[1-9]{4}[- ]?[0-9]{4}[- ]?[0-9]{4}[- ]?[0-9]{4}'
+          example: '7894321600568522'
+          description: Property description
+          type: string
