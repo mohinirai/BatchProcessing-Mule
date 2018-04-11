@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:mulexml="http://www.mulesoft.org/schema/mule/xml" xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:mulerequester="http://www.mulesoft.org/schema/mule/mulerequester" xmlns:vm="http://www.mulesoft.org/schema/mule/vm" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/mulerequester http://www.mulesoft.org/schema/mule/mulerequester/current/mule-mulerequester.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/current/mule-xml.xsd">
+    <http:listener-config name="HTTP_Listener_Configuration" host="0.0.0.0" port="8082" doc:name="HTTP Listener Configuration"/>
+    <file:connector name="file_config" autoDelete="false" streaming="true" validateConnections="true" doc:name="File"/>
+    <flow name="getAccountFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/getcards/{accountNumber}" doc:name="HTTP" allowedMethods="GET"/>
+        <set-variable variableName="accountnumber" value="#[message.inboundProperties.'http.uri.params'.accountNumber]" doc:name="AccountNumber"/>
+        <mulerequester:request resource="file://src/main/resources/all_cards.json" doc:name="Mule Requester"/>
+        <logger message="#[payload]" level="INFO" doc:name="Logger"/>
+        <dw:transform-message doc:name="Transform Message" metadata:id="ff3edb90-79ba-4c02-b16d-4752920b6cf7">
+            <dw:input-payload/>
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+	data: payload map (payload01,indexOfPayload)->{
+		cardNumber :payload01.cardNumber,
+		cardType: payload01.cardType,
+        cardHolderName: payload01.cardHolderName,
+        cardExpiryDate: payload01.cardExpiryDate
+      } filter $.accountNumber == flowVars.accountnumber
+}]]></dw:set-payload>
+        </dw:transform-message>
+        <choice doc:name="Choice">
+            <when expression="#[json:/data[0] != null] ">
+                <set-payload value="#[payload]" doc:name="Set Payload"/>
+            </when>
+            <otherwise>
+                <set-payload value="{&quot;message&quot;:&quot;No Data Found.&quot;}" doc:name="Set Payload"/>
+            </otherwise>
+        </choice>
+        <logger level="INFO" doc:name="Logger" message="#[payload]"/>
+    </flow>
+    <flow name="getCardFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/getcards" doc:name="HTTP" allowedMethods="GET"/>
+        <set-variable variableName="cardnumber" value="#[message.inboundProperties.'http.query.params'.creditcardnumber]" doc:name="CreditCardNumber"/>
+        <mulerequester:request resource="file://src/main/resources/all_cards.json" doc:name="Mule Requester"/>
+        <logger message="#[payload]" level="INFO" doc:name="Logger"/>
+        <dw:transform-message doc:name="Transform Message" metadata:id="d1040178-26a7-4c1e-9347-6535360e8783">
+            <dw:input-payload mimeType="application/json"/>
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+		data: payload map (payload01,indexOfPayload)->{
+		cardNumber :payload01.cardNumber,
+		cardType: payload01.cardType,
+        cardHolderName: payload01.cardHolderName,
+        cardExpiryDate: payload01.cardExpiryDate
+	} filter $.cardNumber == flowVars.cardnumber
+}	]]></dw:set-payload>
+        </dw:transform-message>
+        <choice doc:name="Choice">
+            <when expression="#[json:/data[0] != null] ">
+                <set-payload value="#[payload]" doc:name="Set Payload"/>
+            </when>
+            <otherwise>
+                <set-payload value="{&quot;message&quot; : &quot;No Data Found&quot;}" doc:name="Set Payload"/>
+            </otherwise>
+        </choice>
+
+        <logger level="INFO" doc:name="Logger" message="#[payload +&quot;     &quot;+ flowVars.cardnumber]"/>
+    </flow>
+</mule>

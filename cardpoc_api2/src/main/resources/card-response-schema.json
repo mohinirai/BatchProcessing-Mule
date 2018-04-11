@@ -1,0 +1,20 @@
+[
+				{	
+			    	"cardType":"Maestro",
+			        "cardExpiryDate": "04/08/2021",
+			        "cardNumber" : "1234567891011213",
+			        "cardHolderName" : "Ruchika"
+			    },
+			    {
+			    	"cardType":"Visa",
+			        "cardExpiryDate": "03/04/2025",
+			        "cardNumber" : "9876543210111214",
+			        "cardHolderName" : "Sanskriti"
+			    },
+			    {
+			    	"cardType":"Visa",
+			        "cardExpiryDate": "03/04/2025",
+			        "cardNumber" : "9876543210111214",
+			        "cardHolderName" : "Sanskriti"
+			    }
+]

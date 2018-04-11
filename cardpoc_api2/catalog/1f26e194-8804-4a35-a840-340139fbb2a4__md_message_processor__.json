@@ -1,0 +1,11 @@
+{
+    "inputMessageMetadata": {},
+    "outputMessageMetadata": {
+        "messagePayload": {
+            "connectorName": "#_custom_mule_metadata_type_#",
+            "typeId": "cardjson"
+        }
+    },
+    "id": "1f26e194-8804-4a35-a840-340139fbb2a4",
+    "version": "5.2.0.0"
+}

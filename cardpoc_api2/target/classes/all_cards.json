@@ -1,0 +1,23 @@
+[
+				{	
+					"accountNumber": "9876543210012365",
+			    	"cardType":"Maestro",
+			        "cardExpiryDate": "04/08/2021",
+			        "cardNumber" : "1234567891011213",
+			        "cardHolderName" : "Ruchika"
+			    },
+			    {	
+					"accountNumber": "9876543210012365",
+			    	"cardType":"Visa",
+			        "cardExpiryDate": "04/08/2021",
+			        "cardNumber" : "1234567891011212",
+			        "cardHolderName" : "Ruchika"
+			    },
+			    {
+			    	"accountNumber": "1234567890098745",
+			    	"cardType":"Visa",
+			        "cardExpiryDate": "03/04/2025",
+			        "cardNumber" : "9876543210111214",
+			        "cardHolderName" : "Sanskriti"
+			    }
+]
