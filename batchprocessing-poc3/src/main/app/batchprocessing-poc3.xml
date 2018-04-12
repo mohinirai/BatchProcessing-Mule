@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd">
+    <http:listener-config name="HTTP_Listener_Configuration" host="0.0.0.0" port="8081" doc:name="HTTP Listener Configuration"/>
+    <http:request-config name="HTTP_Request_Configuration" host="localhost" port="8082" doc:name="HTTP Request Configuration"/>
+    <http:request-config name="HTTP_Request_Configuration1" host="localhost" port="8081" doc:name="HTTP Request Configuration"/>
+    <http:listener-config name="HTTP_Listener_Configuration1" host="0.0.0.0" port="8082" doc:name="HTTP Listener Configuration"/>
+    <flow name="batchprocessing-poc3Flow">
+        <http:listener config-ref="HTTP_Listener_Configuration1" path="/batch" doc:name="HTTP"/>
+        <batch:execute name="postCSVBatch" doc:name="Batch Execute"/>
+    </flow>
+    <batch:job name="postCSVBatch" block-size="15">
+        <batch:input>
+            <dw:transform-message doc:name="Transform Message" metadata:id="07dd3a36-478d-4530-a82d-04dd82fae045">
+                <dw:input-payload doc:sample="D:\Users\mohrai\Documents\exp.csv" mimeType="application/csv"/>
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+payload map ((payload01 , indexOfPayload01) -> {
+	country: payload01.county,
+	eq_site_limit: payload01.eq_site_limit,
+	hu_site_limit: payload01.hu_site_limit,
+	policyID: payload01.policyID,
+	statecode: payload01.statecode
+} as :object {
+	class : "com.cg.transform.TransformToCollection"
+})]]></dw:set-payload>
+            </dw:transform-message>
+        </batch:input>
+        <batch:process-records>
+            <batch:step name="Batch_Step">
+                <logger message="#['\nRECORDS'+payload]" level="INFO" doc:name="Logger"/>
+            </batch:step>
+        </batch:process-records>
+    </batch:job>
+</mule>
