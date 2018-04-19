@@ -15,7 +15,7 @@
     <metaDataModelPropertiesManager>
       <properties>
         <org.mule.tooling.metadata.properties.CSVSampleSettingsMetadataProperties>
-          <sampleFilePath>D:\Users\mohrai\Documents\exp.csv</sampleFilePath>
+          <sampleFilePath>src\main\resources\csvExample.csv</sampleFilePath>
           <delimiter>,</delimiter>
           <rowsToIgnore>0</rowsToIgnore>
           <quotedString>false</quotedString>
@@ -23,7 +23,7 @@
           <quoteChar>&quot;</quoteChar>
         </org.mule.tooling.metadata.properties.CSVSampleSettingsMetadataProperties>
         <org.mule.common.metadata.property.TextBasedExampleMetaDataModelProperty>
-          <exampleContent>D:\Users\mohrai\Documents\exp.csv</exampleContent>
+          <exampleContent>src\main\resources\csvExample.csv</exampleContent>
         </org.mule.common.metadata.property.TextBasedExampleMetaDataModelProperty>
       </properties>
     </metaDataModelPropertiesManager>
